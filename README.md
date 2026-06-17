@@ -1,1 +1,0 @@
-# quiz-amaliy-fnetika
