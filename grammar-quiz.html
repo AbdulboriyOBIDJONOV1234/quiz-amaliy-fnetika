@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grammar Drill — B2 Test Mashinasi</title>
+<style>
+  :root{
+    --ink:#1b1d22;
+    --paper:#f7f4ec;
+    --rule:#d8d2c2;
+    --chalk:#2f5d50;
+    --chalk-dim:#7fa89c;
+    --red:#a8412e;
+    --gold:#c79a3c;
+    --card:#fffdf8;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Georgia','Iowan Old Style',serif;
+    min-height:100vh;
+  }
+  .chalkfont{
+    font-family:'Courier New',monospace;
+  }
+
+  /* Blackboard header */
+  header{
+    background:
+      radial-gradient(circle at 20% 20%, rgba(255,255,255,0.03), transparent 40%),
+      linear-gradient(180deg,#234138,#1b332b);
+    color:#eef3ef;
+    padding:40px 24px 56px;
+    position:relative;
+    border-bottom:10px solid #5b4226;
+    overflow:hidden;
+  }
+  header::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 3px);
+    pointer-events:none;
+  }
+  .eyebrow{
+    font-family:'Courier New',monospace;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    font-size:12px;
+    color:var(--gold);
+    margin:0 0 10px;
+  }
+  h1{
+    margin:0;
+    font-size:clamp(28px,5vw,44px);
+    font-weight:400;
+    line-height:1.15;
+    max-width:680px;
+    text-shadow:0 1px 0 rgba(0,0,0,.3);
+  }
+  h1 .accent{
+    color:var(--gold);
+    font-style:italic;
+  }
+  .sub{
+    max-width:560px;
+    margin:14px 0 0;
+    font-size:15px;
+    color:#cdd9d2;
+    line-height:1.6;
+  }
+
+  .wrap{
+    max-width:760px;
+    margin:-30px auto 60px;
+    padding:0 20px;
+  }
+
+  /* Progress + score chalkline */
+  .meta-row{
+    display:flex;
+    gap:14px;
+    align-items:center;
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:4px;
+    padding:14px 18px;
+    box-shadow:0 8px 22px -14px rgba(0,0,0,.35);
+    font-family:'Courier New',monospace;
+    font-size:13px;
+    color:#555;
+    margin-bottom:22px;
+    flex-wrap:wrap;
+  }
+  .meta-row b{color:var(--ink);}
+  .track{
+    flex:1;
+    min-width:120px;
+    height:6px;
+    background:var(--rule);
+    border-radius:3px;
+    overflow:hidden;
+  }
+  .track-fill{
+    height:100%;
+    background:linear-gradient(90deg,var(--chalk),var(--gold));
+    width:0%;
+    transition:width .35s ease;
+  }
+  .restart-btn{
+    border:1px solid var(--ink);
+    background:transparent;
+    color:var(--ink);
+    font-family:'Courier New',monospace;
+    font-size:12px;
+    padding:6px 12px;
+    border-radius:3px;
+    cursor:pointer;
+    letter-spacing:.04em;
+  }
+  .restart-btn:hover{background:var(--ink);color:var(--paper);}
+
+  /* Category divider */
+  .category{
+    margin:34px 0 14px;
+    display:flex;
+    align-items:baseline;
+    gap:12px;
+  }
+  .category .num{
+    font-family:'Courier New',monospace;
+    font-size:13px;
+    color:var(--gold);
+    background:var(--ink);
+    padding:2px 8px;
+    border-radius:2px;
+  }
+  .category h2{
+    font-size:18px;
+    margin:0;
+    font-weight:600;
+    color:var(--chalk);
+  }
+  .category .line{
+    flex:1;
+    height:1px;
+    background:repeating-linear-gradient(90deg,var(--rule) 0,var(--rule) 6px,transparent 6px,transparent 11px);
+  }
+
+  /* Question card */
+  .qcard{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:6px;
+    padding:20px 22px;
+    margin-bottom:14px;
+    box-shadow:0 10px 26px -20px rgba(0,0,0,.4);
+    transition:transform .15s ease;
+  }
+  .qtext{
+    font-size:17px;
+    line-height:1.55;
+    margin:0 0 14px;
+  }
+  .qtext .blank{
+    display:inline-block;
+    min-width:46px;
+    border-bottom:2px dotted var(--ink);
+  }
+  .options{
+    display:grid;
+    gap:9px;
+  }
+  .opt{
+    text-align:left;
+    width:100%;
+    border:1.5px solid var(--rule);
+    background:#fff;
+    padding:10px 14px;
+    border-radius:5px;
+    font-family:'Georgia',serif;
+    font-size:15px;
+    cursor:pointer;
+    color:var(--ink);
+    transition:.12s ease;
+    position:relative;
+  }
+  .opt:hover:not(:disabled){
+    border-color:var(--chalk);
+    background:#f2f7f4;
+  }
+  .opt:disabled{cursor:default;}
+  .opt.correct{
+    border-color:var(--chalk);
+    background:#e7f1ec;
+    color:var(--chalk);
+    font-weight:600;
+  }
+  .opt.correct::after{
+    content:"✓ to'g'ri";
+    position:absolute;
+    right:14px;
+    top:50%;
+    transform:translateY(-50%);
+    font-family:'Courier New',monospace;
+    font-size:11px;
+    color:var(--chalk);
+  }
+  .opt.wrong{
+    border-color:var(--red);
+    background:#fbeae6;
+    color:var(--red);
+    text-decoration:line-through;
+  }
+  .opt.wrong::after{
+    content:"✕ xato";
+    position:absolute;
+    right:14px;
+    top:50%;
+    transform:translateY(-50%);
+    font-family:'Courier New',monospace;
+    font-size:11px;
+    color:var(--red);
+    text-decoration:none;
+  }
+  .opt.dim{opacity:.45;}
+
+  .note{
+    margin:12px 0 0;
+    font-size:13px;
+    color:#6b6457;
+    font-family:'Courier New',monospace;
+    border-left:3px solid var(--gold);
+    padding-left:10px;
+    display:none;
+  }
+  .note.show{display:block;}
+
+  /* Result panel */
+  .result{
+    background:linear-gradient(180deg,#234138,#1b332b);
+    color:#eef3ef;
+    border-radius:8px;
+    padding:32px 26px;
+    text-align:center;
+    margin-top:30px;
+    display:none;
+  }
+  .result.show{display:block;}
+  .result .big{
+    font-size:48px;
+    color:var(--gold);
+    font-family:'Courier New',monospace;
+    margin:0;
+  }
+  .result p{margin:6px 0 18px;color:#cdd9d2;}
+  .result button{
+    border:1px solid var(--gold);
+    background:transparent;
+    color:var(--gold);
+    padding:10px 22px;
+    border-radius:4px;
+    font-family:'Courier New',monospace;
+    cursor:pointer;
+    font-size:13px;
+    letter-spacing:.05em;
+  }
+  .result button:hover{background:var(--gold);color:#1b332b;}
+
+  footer{
+    text-align:center;
+    font-size:12px;
+    color:#9a9486;
+    font-family:'Courier New',monospace;
+    padding:10px 0 40px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="eyebrow chalkfont">B2 · Grammar Drill</p>
+  <h1>Qoidani <span class="accent">eslab qol</span>,<br>keyin gapni <span class="accent">to'g'rila</span>.</h1>
+  <p class="sub">25 ta savol, 7 mavzu. Har bir tugmani bossangiz — javob darhol ko'rinadi. Maqsad: yodlash, shuning uchun xato qilsangiz ham to'g'ri javob darhol ro'parangizda turadi.</p>
+</header>
+
+<div class="wrap">
+
+  <div class="meta-row">
+    <span>Savol: <b id="answeredCount">0</b>/<span id="totalCount">25</span></span>
+    <div class="track"><div class="track-fill" id="trackFill"></div></div>
+    <span>Ball: <b id="scoreCount">0</b></span>
+    <button class="restart-btn" id="restartBtn">Qayta boshlash</button>
+  </div>
+
+  <div id="quizRoot"></div>
+
+  <div class="result" id="resultPanel">
+    <p class="big chalkfont" id="resultScore">0/25</p>
+    <p id="resultMsg">Natija shu.</p>
+    <button id="retryBtn">Yana urinib ko'rish</button>
+  </div>
+
+</div>
+
+<footer>tap → check → eslab qol</footer>
+
+<script>
+const DATA = [
+  { cat: "Perfect Zamonlar (Past/Future Perfect)", items: [
+    { q: "By the time I arrived, he ___ already left.", options: ["had", "has", "have", "was"], correct: 0, note: "Past Perfect: ikkinchi o'tmishdan oldin sodir bo'lgan harakat uchun 'had + V3'." },
+    { q: "She ___ studying English for 3 years before she moved abroad.", options: ["had been", "has been", "was", "is"], correct: 0, note: "Past Perfect Continuous: 'had been + V-ing' — davom etgan harakat, oldingi nuqtagacha." },
+    { q: "Which sentence is in Future Perfect?", options: ["I will have completed the report by 5 PM tomorrow.", "I am completing the report now.", "I completed the report yesterday.", "I will complete the report."], correct: 0, note: "Future Perfect: 'will have + V3' — kelajakdagi muayyan vaqtgacha tugagan harakat." },
+    { q: "I ___ the report by 5 PM tomorrow.", options: ["will have finished", "finish", "am finishing", "finished"], correct: 0, note: "'will have + V3' — kelajakda ma'lum vaqtgacha bajarilgan ish." },
+  ]},
+  { cat: "Savol turlari (Question Forms)", options_label: null, items: [
+    { q: "Choose the correct question form.", options: ["Does she live here?", "Does she lives here?", "She does live here?", "Live she here?"], correct: 0, note: "Hozirgi zamon savoli: 'Does + subject + V1 (base form)?'" },
+    { q: "___ she finish the work? (o'tgan zamon savoli)", options: ["Did", "Does", "Will", "Has"], correct: 0, note: "Past Simple savol uchun 'Did + subject + V1?' ishlatiladi." },
+    { q: "___ they coming to the party?", options: ["Are", "Do", "Did", "Have"], correct: 0, note: "Present Continuous savoli: 'Are + subject + V-ing?'" },
+  ]},
+  { cat: "Murakkab va Qo'shma Gaplar", items: [
+    { q: "\"I am not sure he will come.\" — bu gap turi qanday?", options: ["Complex sentence (ergash gapli qo'shma gap)", "Simple sentence", "Compound sentence", "Imperative sentence"], correct: 0, note: "Bosh gap + ergash gap ('he will come') — noaniqlikni ifodalaydi, shuning uchun complex sentence." },
+    { q: "She doesn't know ___ to do.", options: ["what", "that", "which is", "how that"], correct: 0, note: "'what to do' — to'liqsiz infinitiv ergash gap, savol so'zi 'what' kerak." },
+    { q: "He asked ___ I had eaten.", options: ["if", "that", "what", "because"], correct: 0, note: "Bilvosita ha/yo'q savoq uchun 'if' yoki 'whether' ishlatiladi." },
+    { q: "Which is a compound sentence?", options: ["He wanted to go, but it started to rain.", "He wanted to go because it started to rain.", "Although it rained, he went.", "He went, although it rained."], correct: 0, note: "Compound sentence — ikki teng gap bog'lovchi ('but') orqali bog'langan, biri ikkinchisiga bog'liq emas." },
+  ]},
+  { cat: "Comparative / Superlative (elder, hardly)", items: [
+    { q: "She is ___ than me.", options: ["older", "elder", "more old", "oldest"], correct: 0, note: "'older' — umumiy yosh taqqoslash uchun ishlatiladi (yoshi kattaroq)." },
+    { q: "He is the ___ son.", options: ["eldest", "oldest", "elder", "older"], correct: 0, note: "'eldest' — oila ichida tug'ilish tartibi (katta o'g'il) uchun ishlatiladi." },
+    { q: "Which sentence uses 'hardly' correctly?", options: ["I could hardly hear what he was saying.", "I could hardly heard what he was saying.", "I hardly could not hear him.", "I can't hardly hear him."], correct: 0, note: "'hardly' — 'deyarli yo'q' ma'nosida, modal fe'ldan keyin V1 bilan keladi." },
+  ]},
+  { cat: "Perfect Aspect — 'just' va boshqalar", items: [
+    { q: "She ___ (just) finish the test.", options: ["has just finished", "just finishes", "is just finishing", "just finished"], correct: 0, note: "'just' Present Perfect bilan — yaqinda tugagan harakat: 'has/have + just + V3'." },
+  ]},
+  { cat: "Vaqt bog'lovchilari (Time Connectors)", items: [
+    { q: "___ the movie started, we sat down.", options: ["Before", "Until", "Since", "By"], correct: 0, note: "'Before' — film boshlanishidan oldingi harakatni bog'lovchi." },
+    { q: "We waited ___ the bus arrived.", options: ["until", "before", "while", "by"], correct: 0, note: "'until' — biror voqea sodir bo'lgunga qadar davom etgan kutishni bildiradi." },
+  ]},
+  { cat: "Olmoshlar va Gap Tuzilishi", items: [
+    { q: "Which is the correct reflexive pronoun for 'she'?", options: ["herself", "hisself", "himself", "theirself"], correct: 0, note: "'she' uchun refleksiv olmosh — 'herself'." },
+    { q: "He hurt ___ while cooking.", options: ["himself", "herself", "itself", "themself"], correct: 0, note: "Erkak egasi uchun refleksiv olmosh — 'himself'." },
+    { q: "They did it ___.", options: ["themselves", "theirself", "themself", "itself"], correct: 0, note: "Ko'plik egasi uchun refleksiv olmosh — 'themselves'." },
+    { q: "Choose the correct standard word order.", options: ["Subject + Verb + Object (SVO)", "Verb + Subject + Object (VSO)", "Object + Subject + Verb (OSV)", "Subject + Object + Verb (SOV)"], correct: 0, note: "Ingliz tilida standart gap tartibi — SVO (Ega + Kesim + To'ldiruvchi)." },
+    { q: "He ___ late for class.", options: ["is never", "never is", "is not never", "never not is"], correct: 0, note: "'never' to'liq fe'l (be) bilan ishlatilganda fe'ldan keyin keladi: 'is never'." },
+  ]},
+  { cat: "Passive Voice", items: [
+    { q: "Which sentence is passive?", options: ["The book was written by an anonymous author.", "An anonymous author wrote the book.", "The author is writing a book.", "The author has a book."], correct: 0, note: "Passiv gap: 'was + V3 + by + agent' — ta'sir ko'ruvchi ob'ekt egaga aylanadi." },
+  ]},
+];
+
+let answered = 0;
+let score = 0;
+const total = DATA.reduce((sum, cat) => sum + cat.items.length, 0);
+document.getElementById('totalCount').textContent = total;
+
+function render(){
+  const root = document.getElementById('quizRoot');
+  root.innerHTML = '';
+  let qIndex = 0;
+
+  DATA.forEach((cat, ci) => {
+    const catDiv = document.createElement('div');
+    catDiv.className = 'category';
+    catDiv.innerHTML = `<span class="num chalkfont">0${ci+1}</span><h2>${cat.cat}</h2><div class="line"></div>`;
+    root.appendChild(catDiv);
+
+    cat.items.forEach((item) => {
+      qIndex++;
+      const card = document.createElement('div');
+      card.className = 'qcard';
+      card.id = 'q-' + qIndex;
+
+      const qtext = document.createElement('p');
+      qtext.className = 'qtext';
+      qtext.textContent = qIndex + '. ' + item.q;
+      card.appendChild(qtext);
+
+      const optsDiv = document.createElement('div');
+      optsDiv.className = 'options';
+
+      item.options.forEach((optText, oi) => {
+        const btn = document.createElement('button');
+        btn.className = 'opt';
+        btn.textContent = optText;
+        btn.addEventListener('click', () => handleAnswer(card, item, oi, optsDiv));
+        optsDiv.appendChild(btn);
+      });
+
+      card.appendChild(optsDiv);
+
+      const note = document.createElement('p');
+      note.className = 'note';
+      note.textContent = item.note;
+      card.appendChild(note);
+
+      root.appendChild(card);
+    });
+  });
+}
+
+function handleAnswer(card, item, chosenIndex, optsDiv){
+  if (card.dataset.done) return;
+  card.dataset.done = '1';
+  answered++;
+  const isCorrect = chosenIndex === item.correct;
+  if (isCorrect) score++;
+
+  Array.from(optsDiv.children).forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === item.correct){
+      btn.classList.add('correct');
+    } else if (i === chosenIndex){
+      btn.classList.add('wrong');
+    } else {
+      btn.classList.add('dim');
+    }
+  });
+
+  card.querySelector('.note').classList.add('show');
+
+  updateMeta();
+}
+
+function updateMeta(){
+  document.getElementById('answeredCount').textContent = answered;
+  document.getElementById('scoreCount').textContent = score;
+  document.getElementById('trackFill').style.width = (answered/total*100) + '%';
+
+  if (answered === total){
+    const panel = document.getElementById('resultPanel');
+    panel.classList.add('show');
+    document.getElementById('resultScore').textContent = score + '/' + total;
+    let msg = '';
+    const pct = score/total;
+    if (pct === 1) msg = "Mukammal! Barcha qoidalarni mustahkam bilasiz.";
+    else if (pct >= 0.8) msg = "Juda yaxshi! Faqat bir nechta qoidani takrorlang.";
+    else if (pct >= 0.5) msg = "Yaxshi boshlanish — xato qilingan joylarni qaytadan o'qing.";
+    else msg = "Mavzularni qaytadan ko'rib chiqish foydali bo'ladi — har bir izohni diqqat bilan o'qing.";
+    document.getElementById('resultMsg').textContent = msg;
+    panel.scrollIntoView({behavior:'smooth', block:'center'});
+  }
+}
+
+function reset(){
+  answered = 0;
+  score = 0;
+  document.getElementById('resultPanel').classList.remove('show');
+  updateMeta();
+  render();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+document.getElementById('restartBtn').addEventListener('click', reset);
+document.getElementById('retryBtn').addEventListener('click', reset);
+
+render();
+</script>
+
+</body>
+</html>
